@@ -1,0 +1,23 @@
+{
+  "manifest_version": 2,
+  "name": "My Web Plugin",
+  "version": "1.0",
+  "description": "A plugin to download code snippets",
+  "permissions": [
+    "activeTab"
+  ],
+  "browser_action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://csoj.webvpn.wzu.edu.cn/contest/problem*"],
+      "js": ["content.js"]
+    }
+  ],
+
+  "action": {
+    "default_popup": "popup.html"
+
+  }
+}
