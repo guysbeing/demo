@@ -1,5 +1,11 @@
 @echo off
 
+REM 打开 GitHub Desktop
+start "" "github-desktop://"
+
+REM 等待 GitHub Desktop 启动
+timeout /t 5
+
 REM 导航到本地仓库路径
 cd /d "D:\桌面\DOWNLOAD\demo"
 
