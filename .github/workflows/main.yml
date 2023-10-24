@@ -1,0 +1,18 @@
+name: Gitee repos mirror periodic job
+on:
+  push:
+    # Uncomment the following line to trigger on every push
+    # branches:
+    #   - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mirror the Github organization repos to Gitee.
+        uses: guysbeing/demo
+        with:
+          src: github/guysbeing
+          dst: gitee/yp-l
+          dst_key: ${{ secrets.GITEE_TOKEN }}
+          dst_token: ${{ secrets.your_email@example.com }}
