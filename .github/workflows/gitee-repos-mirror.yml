@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Mirror the Github organization repos to Gitee.
-        uses: guysbeing/demo@1
+        uses: Yikun/gitee-mirror-action@v0.01
         with:
           src: github/guysbeing
           dst: gitee/yp-l
