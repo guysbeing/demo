@@ -2,7 +2,7 @@ import os
 import shutil
 
 sourcePath = r"D:\桌面\DOWNLOAD\edgedown"  # 源目录路径
-destinationPath = r"D:\桌面\DOWNLOAD\demo\javapy"  # 目标目录路径
+destinationPath = r"D:\桌面\DOWNLOAD\demo\java"  # 目标目录路径
 
 # 遍历源目录中的文件
 for filename in os.listdir(sourcePath):
