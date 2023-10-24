@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Mirror the Github organization repos to Gitee.
-        uses: guysbeing/demo
+        uses: guysbeing/demo@v1.0
         with:
           src: github/guysbeing
           dst: gitee/yp-l
