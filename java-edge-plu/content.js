@@ -19,10 +19,20 @@
   // 创建一个 Blob 对象，将 textContent 内容写入其中
   var blob = new Blob([textContent], { type: 'text/plain' });
 
-  // 创建一个下载链接
+  // 提取<head>标签中的<title>元素的内容
+  const title = document.title;
+  // 获取包含指定类名的<div>元素
+  const container = document.querySelector('div.problem-view');
+
+  // 获取<h1>元素
+  const heading = container.querySelector('h1');
+
+  // 提取<h1>元素中的文本内容
+  const headingText = heading.textContent;
+
   var downloadLink = document.createElement('a');
   downloadLink.href = URL.createObjectURL(blob);
-  downloadLink.download = 'text-content.txt';
+  downloadLink.download = title + headingText + '.java';
 
   // 模拟点击下载链接
   downloadLink.click();
