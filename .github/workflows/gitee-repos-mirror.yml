@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Mirror the Github organization repos to Gitee.
-      uses: Yikun/hub-mirror-action@master
+      uses: Yikun/gitee-mirror-action@v0.01
+      #代表我们用的仓库，不用同步
       with:
-        name: Mirror the Github organization repos to Gitee.
-        uses: Yikun/hub-mirror-action@v1.3
+        src: github/guysbeing
+        dst: gitee/yp-l
         dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
         dst_token: ${{ secrets.GITEE_TOKEN }}
         account_type: org
-        # src_account_type: org
-        # dst_account_type: org
+
