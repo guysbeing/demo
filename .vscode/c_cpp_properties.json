@@ -5,14 +5,17 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "D:/桌面/tools/dev/Dev-Cpp/MinGW64/include",
-                "D:/桌面/tools/dev/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include"
+                "D:/桌面/tools/dev/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include",
+                "D:/桌面/tools/dev/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include",
+                "D:/桌面/tools/dev/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++",
+                "D:/桌面/tools/dev/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++/x86_64-w64-mingw32"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE"
             ],
-            "compilerPath": "D:\\桌面\\tools\\dev\\Dev-Cpp\\MinGW64\\bin\\gcc.exe",
+            "compilerPath": "D:/桌面/tools/dev/Dev-Cpp/MinGW64/bin/cpp.exe",
             "cStandard": "c11",
             "cppStandard": "c++14",
             "intelliSenseMode": "windows-gcc-x64"
