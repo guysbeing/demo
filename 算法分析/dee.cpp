@@ -11,13 +11,16 @@ int de[100][100];
 int ans[100];
 int found[100];
 char road[100][100];
-
 void dijk(){
     ans[1]=0;
-    road[1][1]='1';
+    road[1][0]='1';
     for(int i=2;i<=n;i++){
         if(de[1][i]!=-1){
-            road[i][i]='1';
+            road[i][0]='1';
+            strcat(road[i], " ");
+            char ok[10];
+            itoa(i,ok,10);
+            strcat(road[i], ok);
             ans[i]=de[1][i];
         }
     }
@@ -25,18 +28,21 @@ void dijk(){
     for(int i=2;i<=n;i++){
         int sign;
         int min1=INT_MAX;
-        if(ans[i]<min1&&!found[i]){
-            min1=ans[i];
-            sign=i;
+        for(int j=2;j<=n;j++)
+        if(ans[j]<min1&&!found[j]){
+            min1=ans[j];
+            sign=j;
         }
-        found[i]++;
+        found[sign]++;
         for(int j=2;j<=n;j++){
             if(de[sign][j]>0){
                 if (ans[j] > de[sign][j] + ans[sign]) {
                     ans[j] = de[sign][j] + ans[sign];
                     strcpy(road[j],road[sign]);
-                    strcat(road[i], " ");
-                    strcat(road[i], to_string(j).c_str);
+                    strcat(road[j], " ");
+                    char ok[10];
+                    itoa(j,ok,10);
+                    strcat(road[j], ok);
                 }
             }
         }
@@ -55,9 +61,10 @@ int main() {
         dijk();
         for(int i=1;i<=n;i++)
         cout << ans[i] << " ";
+        cout << endl;
         for(int i=1;i<=n;i++)
         {
-            cout << road[i];
+            cout << i << " "<< road[i]<< endl;
         }
     }
 }
