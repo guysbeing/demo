@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+  "name": "down",
+  "version": "1.0",
+  "description": "A plugin to download code snippets",
+  "permissions": [
+    "activeTab"
+  ],
+  "browser_action": {
+    "default_popup": "popup.html"
+  },
+
+  "action": {
+    "default_popup": "popup.html"
+
+  }
+}
