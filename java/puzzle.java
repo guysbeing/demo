@@ -100,8 +100,14 @@ public class Main extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 if (CurrentFile != null) {
-                    saveChangesToFile(CurrentFile);
-                } else {
+                    if (CurrentFile.exists()) {
+                        saveChangesToFile(CurrentFile);
+                    }
+                    else {
+                        setMessage("No such a file!",2);
+                    }
+                }
+                else {
                     setMessage("No file is currently open!",2);
                 }
             }
@@ -327,7 +333,7 @@ public class Main extends Application {
                 message.setStyle("-fx-text-fill : yellow;-fx-background-color: black;");
                 break;
             case 3:
-                message.setStyle("-fx-text-fill : green;-fx-background-color: black;");
+                message.setStyle("-fx-text-fill : Chartreuse ;-fx-background-color: black;");
         }
     }
 }
