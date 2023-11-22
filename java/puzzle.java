@@ -23,11 +23,15 @@ import java.util.Arrays;
 public class Main extends Application {
     TextArea textArea,message;
     File CurrentFile;
+    private int step;
     private int ROWS ;
     private int COLS ;
     private char[][] maze;
     private int playerRow;
     private int playerCol;
+
+    private MessageStore history=new MessageStore();
+
     @Override
     public void start(final Stage primaryStage) {
         message= new TextArea();//信息反馈
@@ -43,6 +47,9 @@ public class Main extends Application {
                 File selectedFile = fileChooser.showOpenDialog(primaryStage);
                 if (selectedFile != null) {
                     copyFile(selectedFile);
+                }
+                else {
+                    setMessage("File not found!",2);
                 }
             }
         });
@@ -134,10 +141,11 @@ public class Main extends Application {
             }
         });
 
-        Button gameButton=new Button("play");
+        final Button gameButton=new Button("play");
         gameButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                gameButton.requestFocus();
                 resetGame();
             }
         });
@@ -192,7 +200,7 @@ public class Main extends Application {
             if(check_(filename))
                 setMessage("The file has been opened",3);
             else
-                setMessage("The file might can't be identified",1);
+                setMessage("The file might can't be identified",2);
         } catch (IOException e) {
             setMessage("Error copying file: " + e.getMessage(), 1);
         }
@@ -235,7 +243,8 @@ public class Main extends Application {
                 }
             }
         }
-
+        step=0;
+        history=new MessageStore();
         updateTextArea();
     }
 
@@ -259,25 +268,30 @@ public class Main extends Application {
         switch (keyCode) {
             case W:
             case UP:
+                history.storeMessage("↑");
                 newRow--;
                 break;
             case S:
             case DOWN:
+                history.storeMessage("↓");
                 newRow++;
                 break;
             case A:
             case LEFT:
+                history.storeMessage("←");
                 newCol--;
                 break;
             case D:
             case RIGHT:
+                history.storeMessage("→");
                 newCol++;
                 break;
             default:
-                return; // Ignore other keys
+                return;
         }
         checkGameResult(newRow, newCol);
         if (isValidMove(newRow, newCol)) {
+            step++;
             maze[playerRow][playerCol] = ' ';
             playerRow = newRow;
             playerCol = newCol;
@@ -319,8 +333,33 @@ public class Main extends Application {
     }
 
     public void checkGameResult(int row, int col) {
-        if (maze[row][col] == 'X') {
-            setMessage("Congratulations! You reached the exit!",3);
+        if (maze[row][col] == 'x') {
+            setMessage("Congratulations!step:"+step,3);
+        }
+    }
+
+    public class MessageStore {
+        private List<String> messageList;
+
+        public MessageStore() {
+            this.messageList = new ArrayList<>();
+        }
+
+        public void storeMessage(String message) {
+            messageList.add(message);
+            if (messageList.size() > 10) {
+                messageList.remove(0);
+            }
+            setMessage(history.toString()+"step:"+step,3);
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            for (int i = messageList.size()-1; i >= 0; i--) {
+                sb.append(messageList.get(i));
+            }
+            return sb.toString();
         }
     }
     void setMessage(String string,int level){// 反馈区
