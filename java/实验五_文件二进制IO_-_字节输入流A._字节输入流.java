@@ -6,7 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.input.DragEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -14,8 +14,6 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
 import javafx.scene.control.Label;
 import java.io.*;
 import java.util.List;
@@ -25,6 +23,11 @@ import java.util.Arrays;
 public class Main extends Application {
     TextArea textArea,message;
     File CurrentFile;
+    private int ROWS ;
+    private int COLS ;
+    private char[][] maze;
+    private int playerRow;
+    private int playerCol;
     @Override
     public void start(final Stage primaryStage) {
         message= new TextArea();//信息反馈
@@ -40,6 +43,9 @@ public class Main extends Application {
                 File selectedFile = fileChooser.showOpenDialog(primaryStage);
                 if (selectedFile != null) {
                     copyFile(selectedFile);
+                }
+                else {
+                    setMessage("File not found!",2);
                 }
             }
         });
@@ -65,6 +71,8 @@ public class Main extends Application {
         });
 
         textArea = new TextArea();//文件内容显示页面
+        String fontStyles = "-fx-font-family: monospace; -fx-font-size: 12px;";
+        textArea.setStyle(fontStyles);
         textArea.setOnDragOver(new EventHandler<DragEvent>() {//拖拽实现
             @Override
             public void handle(DragEvent dragEvent) {
@@ -95,8 +103,14 @@ public class Main extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 if (CurrentFile != null) {
-                    saveChangesToFile(CurrentFile);
-                } else {
+                    if (CurrentFile.exists()) {
+                        saveChangesToFile(CurrentFile);
+                    }
+                    else {
+                        setMessage("No such a file!",2);
+                    }
+                }
+                else {
                     setMessage("No file is currently open!",2);
                 }
             }
@@ -123,14 +137,20 @@ public class Main extends Application {
             }
         });
 
-
-        Text text=new Text("Message:");
-
-        HBox hBox=new HBox();
-        hBox.getChildren().addAll(text,message);
+        Button gameButton=new Button("play");
+        gameButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                resetGame();
+            }
+        });
 
         HBox savebox=new HBox(6);
-        savebox.getChildren().addAll(saveButton,createButton);
+        savebox.getChildren().addAll(saveButton,createButton,gameButton);
+
+        Text text=new Text("Message:");
+        HBox hBox=new HBox();
+        hBox.getChildren().addAll(text,message);
 
         VBox vbox = new VBox();
         vbox.setPadding(new Insets(8));
@@ -140,11 +160,18 @@ public class Main extends Application {
         root.setCenter(vbox);
 
         Scene scene = new Scene(root, 400, 300);
+        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                handleKeyPress(keyEvent.getCode());
+                System.out.println(keyEvent.getCode());
+            }
+        });
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    void copyFile(File file) {
+    void copyFile(File file) {// copy txt to the textarea
         try {
             CurrentFile=file;
             String filename=file.getName();
@@ -168,9 +195,9 @@ public class Main extends Application {
             if(check_(filename))
                 setMessage("The file has been opened",3);
             else
-                setMessage("The file might can't be identified",1);
+                setMessage("The file might can't be identified",2);
         } catch (IOException e) {
-            e.printStackTrace();
+            setMessage("Error copying file: " + e.getMessage(), 1);
         }
     }
     void saveChangesToFile(File file) {
@@ -180,13 +207,12 @@ public class Main extends Application {
             fileWriter.close();
             setMessage("Changes saved to file.",3);
         } catch (IOException e) {
-            e.printStackTrace();
+            setMessage("Error saving file: " + e.getMessage(), 1);
         }
     }
     public static void main(String[] args) {
         launch(args);
     }
-
     boolean check_(String filename){
         String extend=filename.substring(filename.lastIndexOf(".")+1);
         List<String> ex= Arrays.asList(
@@ -196,7 +222,115 @@ public class Main extends Application {
         );
         return  ex.contains(extend);
     }
-    void setMessage(String string,int level){
+
+    //以下是游戏代码
+
+
+    public void resetGame() {
+        String text = textArea.getText();
+        maze = parseMaze(text);
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLS; col++) {
+                System.out.println(row+col+maze[row][col]);
+                if (maze[row][col] == 'S') {
+                    playerRow = row;
+                    playerCol = col;
+                }
+            }
+        }
+
+        updateTextArea();
+    }
+
+    public void updateTextArea() {
+        StringBuilder sb = new StringBuilder();
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLS; col++) {
+                sb.append(maze[row][col]);
+            }
+            sb.append("\n");
+        }
+        textArea.setText(sb.toString());
+    }
+
+    public void handleKeyPress(KeyCode keyCode) {
+        int newRow = playerRow;
+        int newCol = playerCol;
+        System.out.println(newCol);
+        System.out.println(newRow);
+
+        switch (keyCode) {
+            case W:
+            case UP:
+                setMessage("↑",3);
+                newRow--;
+                break;
+            case S:
+            case DOWN:
+                setMessage("↓",3);
+                newRow++;
+                break;
+            case A:
+            case LEFT:
+                setMessage("←",3);
+                newCol--;
+                break;
+            case D:
+            case RIGHT:
+                setMessage("→",3);
+                newCol++;
+                break;
+            default:
+                return; // Ignore other keys
+        }
+        checkGameResult(newRow, newCol);
+        if (isValidMove(newRow, newCol)) {
+            maze[playerRow][playerCol] = ' ';
+            playerRow = newRow;
+            playerCol = newCol;
+            maze[playerRow][playerCol] = 'S';
+            updateTextArea();
+        }
+    }
+
+    public char[][] parseMaze(String text) {
+        String[] lines = text.split("\n");
+        System.err.println(text);
+        if (lines.length < 2) {
+            setMessage("Invalid maze format.",1);
+            return null;
+        }
+
+        ROWS = Integer.parseInt(lines[0]);
+        COLS = Integer.parseInt(lines[1]);
+
+        if (lines.length != ROWS + 2) {
+            setMessage("Invalid maze format.",1);
+            return null;
+        }
+        char[][] map = new char[ROWS+10][COLS+10];
+
+        for (int row = 0; row < ROWS; row++) {
+            String line = lines[row + 2];
+
+            for (int col = 0; col < COLS; col++) {
+                map[row][col] = line.charAt(col);
+            }
+        }
+        setMessage("Game begins",3);
+        return map;
+    }
+
+    public boolean isValidMove(int row, int col) {
+        return row >= 0 && row < ROWS && col >= 0 && col < COLS && maze[row][col] != '#';
+    }
+
+    public void checkGameResult(int row, int col) {
+        if (maze[row][col] == 'X') {
+            setMessage("Congratulations! You reached the exit!",3);
+        }
+    }
+    void setMessage(String string,int level){// 反馈区
         message.setText(string);
         switch (level){
             case 1:
@@ -206,8 +340,7 @@ public class Main extends Application {
                 message.setStyle("-fx-text-fill : yellow;-fx-background-color: black;");
                 break;
             case 3:
-                message.setStyle("-fx-text-fill : green;-fx-background-color: black;");
+                message.setStyle("-fx-text-fill : Chartreuse ;-fx-background-color: black;");
         }
-
     }
 }
